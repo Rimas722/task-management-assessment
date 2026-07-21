@@ -6,10 +6,34 @@
 
 generator client {
   provider = "prisma-client"
-  output   = "../generated/prisma"
+  output   = "../src/generated"
 }
+
 
 datasource db {
   provider = "postgresql"
   url      = env("DATABASE_URL")
+}
+
+model User {
+  id        String   @id @default(uuid())
+  name      String   @default("Admin User")
+  email     String   @unique
+  password  String
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+  tasks     Task[]   // Defines the relationship: One User has many Tasks
+}
+
+model Task {
+  id          String   @id @default(uuid())
+  title       String
+  description String?  // The question mark means this field is optional
+  priority    String   // "Low" | "Medium" | "High"
+  status      String   // "Pending" | "In Progress" | "Completed"
+  dueDate     DateTime
+  userId      String   
+  user        User     @relation(fields: [userId], references: [id])
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
 }
